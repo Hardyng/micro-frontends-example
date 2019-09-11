@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello microfrontends</title>
+
+    <script>
+      const modules = ['sample-app-1', 'sample-app-2']
+      window.addEventListener('popstate', (ev) => {
+        const moduleName = window.location.pathname.slice(1)
+        if (modules.includes(moduleName)) {
+          const script = document.createElement('script');
+          script.src = `${moduleName}/dist/js/app.js`;
+          document.head.appendChild(script)
+
+          const styles = document.createElement('link')
+          styles.href = `${moduleName}/dist/css/app.css`
+          styles.rel = "stylesheet"
+          document.head.appendChild(styles)
+
+          document.getElementById('app').innerHTML = `<${moduleName}></${moduleName}>`
+        }
+      });
+
+      window.pushUrl = (href) => {
+        history.pushState({}, '', href);
+        window.dispatchEvent(new Event('popstate'));
+      }
+    </script>
+</head>
+<body>
+    <nav>
+        <button onclick="pushUrl('/sample-app-1')">sample-app-1</button>
+        <button onclick="pushUrl('/sample-app-2')">Sample-app-2</button>
+    </nav>
+    <div id="app"></div>
+</body>
+</html>
